@@ -68,7 +68,7 @@ Route::middleware(['auth', 'role.petugas'])->prefix('petugas')->name('petugas.')
 
     // Laporan
     Route::get('/laporan', [PetugasController::class, 'indexLaporan'])->name('laporan.index');
-    Route::get('/laporan/pdf', [PetugasController::class, 'cetakLaporan'])->name('laporan.pdf');
+    Route::get('/laporan/cetak', [PetugasController::class, 'cetakLaporan'])->name('laporan.cetak');
 });
 
 //peminjam

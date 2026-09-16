@@ -218,7 +218,14 @@ class AdminController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
             'role' => 'required|in:admin,petugas,peminjam',
+            'foto_profile' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
+
+        $fotoProfile = null;
+
+        if ($request->hasFile('foto_profile')) {
+            $fotoProfile = $request->file('foto_profile')->store('foto_profile', 'public');
+        }
 
         $user = User::create([
             'name' => $request->name,
@@ -226,6 +233,7 @@ class AdminController extends Controller
             'password' => Hash::make($request->password),
             'role' => $request->role,
             'no_hp' => $request->no_hp,
+            'foto_profile' => $fotoProfile,
         ]);
 
         // Catat log aktivitas
@@ -256,6 +264,7 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
             'role' => 'required|in:admin,petugas,peminjam',
+            'foto_profile' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $data = [
@@ -264,6 +273,10 @@ class AdminController extends Controller
             'role' => $request->role,
             'no_hp' => $request->no_hp,
         ];
+
+        if ($request->hasFile('foto_profile')) {
+            $data['foto_profile'] = $request->file('foto_profile')->store('foto_profile', 'public');
+        }
 
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
@@ -517,6 +530,21 @@ class AdminController extends Controller
         return redirect()
             ->route('admin.peminjaman.index')
             ->with('success', 'Status peminjaman berhasil diperbarui.');
+    }
+    
+    //4. Hapus Peminjaman
+    public function destroyPeminjaman($id)
+    {
+        $peminjaman = Peminjaman::findOrFail($id);
+
+        // Hapus detail peminjaman terlebih dahulu
+        DetailPinjam::where('peminjaman_id', $peminjaman->id)->delete();
+
+        // Hapus data peminjaman
+        $peminjaman->delete();
+
+        return redirect()->route('admin.peminjaman.index')
+            ->with('success', 'Data peminjaman berhasil dihapus.');
     }
 
     // =========================================================

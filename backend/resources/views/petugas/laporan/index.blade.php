@@ -1,406 +1,103 @@
 @extends('layouts.app')
 
-@section('title', 'Cetak Laporan - Petugas')
-@section('header-title', 'Cetak Laporan')
+@section('title', 'Laporan Peminjaman - Dashboard Petugas')
+@section('header-title', 'Laporan Peminjaman & Pengembalian Alat')
 
 @section('content')
-
-<div class="bg-white rounded-lg shadow-sm border border-gray-200">
-
-    {{-- Header --}}
-    <div class="p-5 border-b border-gray-200">
-
-        <div class="flex items-center justify-between">
-
-            <div>
-                <h2 class="text-lg font-semibold text-gray-800">
-                    Laporan Pengembalian Alat
-                </h2>
-
-                <p class="text-sm text-gray-500 mt-1">
-                    Daftar pencatatan pengembalian alat oleh petugas.
-                </p>
-            </div>
-
-            {{-- Tombol Cetak --}}
-            <a
-    href="{{ route('petugas.laporan.pdf', [
-        'tanggal_mulai' => $tanggalMulai,
-        'tanggal_selesai' => $tanggalSelesai
-    ]) }}"
-    target="_blank"
-    class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold transition"
->
-    Cetak / Lihat PDF
-</a>
-
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-6">
+        <div class="p-5 border-b border-gray-200 bg-gray-50">
+            <h3 class="text-lg font-bold text-gray-800">Filter Laporan</h3>
         </div>
-
-    </div>
-
-
-    {{-- Filter --}}
-    <div class="p-5 border-b border-gray-200 print:hidden">
-
-        <form
-            action="{{ route('petugas.laporan.index') }}"
-            method="GET"
-            class="flex flex-wrap items-end gap-3"
-        >
-
-            {{-- Tanggal Mulai --}}
+        <form action="{{ route('petugas.laporan.index') }}" method="GET" class="p-5 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div>
-
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Dari Tanggal
-                </label>
-
-                <input
-                    type="date"
-                    name="tanggal_mulai"
-                    value="{{ $tanggalMulai }}"
-                    class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-
+                <label class="block text-xs font-semibold text-gray-600 mb-1">Status Peminjaman:</label>
+                <select name="status" class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500">
+                    <option value="">Semua Status</option>
+                    <option value="diajukan" {{ request('status') == 'diajukan' ? 'selected' : '' }}>Diajukan</option>
+                    <option value="dipinjam" {{ request('status') == 'dipinjam' ? 'selected' : '' }}>Dipinjam</option>
+                    <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                    <option value="telat" {{ request('status') == 'telat' ? 'selected' : '' }}>Telat</option>
+                </select>
             </div>
-
-
-            {{-- Tanggal Selesai --}}
             <div>
-
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Sampai Tanggal
-                </label>
-
-                <input
-                    type="date"
-                    name="tanggal_selesai"
-                    value="{{ $tanggalSelesai }}"
-                    class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-
+                <label class="block text-xs font-semibold text-gray-600 mb-1">Dari Tanggal (Pinjam):</label>
+                <input type="date" name="dari_tanggal" value="{{ request('dari_tanggal') }}"
+                    class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500">
             </div>
-
-
-            {{-- Tombol Filter --}}
-            <button
-                type="submit"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition"
-            >
-                Filter
-            </button>
-
-
-            {{-- Reset --}}
-            <a
-                href="{{ route('petugas.laporan.index') }}"
-                class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition"
-            >
-                Reset
-            </a>
-
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">Sampai Tanggal (Pinjam):</label>
+                <input type="date" name="sampai_tanggal" value="{{ request('sampai_tanggal') }}"
+                    class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500">
+            </div>
+            <div class="flex space-x-2">
+                <button type="submit" class="flex-1 bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 text-sm font-semibold rounded-lg transition shadow-sm">
+                    Filter
+                </button>
+                <a href="{{ route('petugas.laporan.index') }}"
+                    class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-3 py-2 text-sm rounded-lg transition flex items-center justify-center">
+                    Reset
+                </a>
+            </div>
         </form>
-
     </div>
 
-
-    {{-- Area Laporan --}}
-    <div id="area-laporan" class="p-5">
-
-        {{-- Judul untuk hasil cetak --}}
-        <div class="hidden print:block text-center mb-6">
-
-            <h1 class="text-xl font-bold text-gray-800">
-                LAPORAN PENGEMBALIAN ALAT
-            </h1>
-
-            <p class="text-sm text-gray-600 mt-1">
-                Sistem Peminjaman Alat
-            </p>
-
-            @if($tanggalMulai || $tanggalSelesai)
-
-                <p class="text-sm text-gray-600 mt-2">
-
-                    Periode:
-                    
-                    {{ $tanggalMulai ? \Carbon\Carbon::parse($tanggalMulai)->format('d-m-Y') : '...' }}
-
-                    s/d
-
-                    {{ $tanggalSelesai ? \Carbon\Carbon::parse($tanggalSelesai)->format('d-m-Y') : '...' }}
-
-                </p>
-
-            @endif
-
+    <!-- Tabel Hasil & Tombol Cetak -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
+        <div class="p-5 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-gray-800">Hasil Rekap Laporan</h3>
+            <a href="{{ route('petugas.laporan.cetak', request()->all()) }}" target="_blank"
+                class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-sm font-semibold rounded-lg transition shadow-sm flex items-center space-x-2">
+                <span>Cetak / Print Laporan</span>
+            </a>
         </div>
 
-
-        {{-- Ringkasan --}}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
-
-            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-
-                <p class="text-sm text-gray-500">
-                    Total Pengembalian
-                </p>
-
-                <p class="text-2xl font-bold text-gray-800 mt-1">
-                    {{ $pengembalians->count() }}
-                </p>
-
-            </div>
-
-
-            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-
-                <p class="text-sm text-red-600">
-                    Total Denda
-                </p>
-
-                <p class="text-2xl font-bold text-red-700 mt-1">
-                    Rp {{ number_format($pengembalians->sum('denda'), 0, ',', '.') }}
-                </p>
-
-            </div>
-
-
-            <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
-
-                <p class="text-sm text-orange-600">
-                    Total Denda Kerusakan
-                </p>
-
-                <p class="text-2xl font-bold text-orange-700 mt-1">
-                    Rp {{ number_format($pengembalians->sum('denda_kerusakan'), 0, ',', '.') }}
-                </p>
-
-            </div>
-
-        </div>
-
-
-        {{-- Tabel --}}
         <div class="overflow-x-auto">
-
-            <table class="w-full text-sm text-left border-collapse">
-
+            <table class="w-full text-left border-collapse">
                 <thead>
-
-                    <tr class="bg-gray-100 text-gray-700 uppercase text-xs">
-
-                        <th class="px-3 py-3 border">
-                            No
-                        </th>
-
-                        <th class="px-3 py-3 border">
-                            Peminjam
-                        </th>
-
-                        <th class="px-3 py-3 border">
-                            Alat
-                        </th>
-
-                        <th class="px-3 py-3 border">
-                            Tgl Pinjam
-                        </th>
-
-                        <th class="px-3 py-3 border">
-                            Tgl Kembali
-                        </th>
-
-                        <th class="px-3 py-3 border">
-                            Kondisi
-                        </th>
-
-                        <th class="px-3 py-3 border">
-                            Denda
-                        </th>
-
-                        <th class="px-3 py-3 border">
-                            Denda Kerusakan
-                        </th>
-
-                        <th class="px-3 py-3 border">
-                            Petugas
-                        </th>
-
+                    <tr class="bg-gray-100 text-gray-600 text-sm uppercase tracking-wider">
+                        <th class="py-3 px-4 border-b">No</th>
+                        <th class="py-3 px-4 border-b">Peminjam</th>
+                        <th class="py-3 px-4 border-b">Tgl Pinjam</th>
+                        <th class="py-3 px-4 border-b">Rencana Kembali</th>
+                        <th class="py-3 px-4 border-b">Status</th>
+                        <th class="py-3 px-4 border-b">Detail Alat</th>
+                        <th class="py-3 px-4 border-b">Denda</th>
                     </tr>
-
                 </thead>
-
-
-                <tbody>
-
-                    @forelse($pengembalians as $pengembalian)
-
-                        <tr>
-
-                            {{-- Nomor --}}
-                            <td class="px-3 py-3 border text-center">
-                                {{ $loop->iteration }}
+                <tbody class="text-gray-700 text-sm">
+                    @forelse($laporans as $index => $item)
+                        <tr class="hover:bg-gray-50 transition align-top">
+                            <td class="py-3 px-4 border-b">{{ $index + 1 }}</td>
+                            <td class="py-3 px-4 border-b font-medium text-gray-900">{{ $item->user->name ?? '-' }}</td>
+                            <td class="py-3 px-4 border-b">{{ $item->tgl_pinjam }}</td>
+                            <td class="py-3 px-4 border-b">{{ $item->tgl_kembali_plan }}</td>
+                            <td class="py-3 px-4 border-b">
+                                <span class="px-2.5 py-1 rounded text-xs font-semibold
+                                    {{ $item->status == 'selesai' ? 'bg-emerald-100 text-emerald-700' : '' }}
+                                    {{ $item->status == 'dipinjam' ? 'bg-blue-100 text-blue-700' : '' }}
+                                    {{ $item->status == 'telat' ? 'bg-red-100 text-red-700' : '' }}
+                                    {{ $item->status == 'diajukan' ? 'bg-yellow-100 text-yellow-700' : '' }}">
+                                    {{ ucfirst($item->status) }}
+                                </span>
                             </td>
-
-
-                            {{-- Peminjam --}}
-                            <td class="px-3 py-3 border">
-
-                                {{ $pengembalian->peminjaman->user->name ?? 'User Dihapus' }}
-
-                            </td>
-
-
-                            {{-- Alat --}}
-                            <td class="px-3 py-3 border">
-
-                                <ul class="list-disc list-inside">
-
-                                    @foreach($pengembalian->peminjaman->detailPinjam as $detail)
-
-                                        <li>
-                                            {{ $detail->alat->nama_alat ?? 'Alat Dihapus' }}
-                                            ({{ $detail->jumlah }} pcs)
-                                        </li>
-
+                            <td class="py-3 px-4 border-b">
+                                <ul class="list-disc list-inside space-y-1 text-xs">
+                                    @foreach($item->detailPinjam as $detail)
+                                        <li>{{ $detail->alat->nama_alat ?? '-' }} ({{ $detail->jumlah }})</li>
                                     @endforeach
-
                                 </ul>
-
                             </td>
-
-
-                            {{-- Tanggal Pinjam --}}
-                            <td class="px-3 py-3 border">
-
-                                {{ $pengembalian->peminjaman->tgl_pinjam->format('d-m-Y') }}
-
+                            <td class="py-3 px-4 border-b font-semibold">
+                                Rp {{ number_format($item->pengembalian->denda ?? 0, 0, ',', '.') }}
                             </td>
-
-
-                            {{-- Tanggal Kembali --}}
-                            <td class="px-3 py-3 border">
-
-                                {{ $pengembalian->tgl_kembali->format('d-m-Y') }}
-
-                            </td>
-
-
-                            {{-- Kondisi --}}
-                            <td class="px-3 py-3 border">
-
-                                {{ $pengembalian->kondisi_kembali }}
-
-                            </td>
-
-
-                            {{-- Denda --}}
-                            <td class="px-3 py-3 border text-right">
-
-                                Rp {{ number_format($pengembalian->denda, 0, ',', '.') }}
-
-                            </td>
-
-
-                            {{-- Denda Kerusakan --}}
-                            <td class="px-3 py-3 border text-right">
-
-                                Rp {{ number_format($pengembalian->denda_kerusakan, 0, ',', '.') }}
-
-                            </td>
-
-
-                            {{-- Petugas --}}
-                            <td class="px-3 py-3 border">
-
-                                {{ $pengembalian->petugas->name ?? 'Petugas Dihapus' }}
-
-                            </td>
-
                         </tr>
-
                     @empty
-
                         <tr>
-
-                            <td
-                                colspan="9"
-                                class="px-4 py-8 border text-center text-gray-500"
-                            >
-                                Belum ada data pengembalian.
-                            </td>
-
+                            <td colspan="7" class="py-6 text-center text-gray-500">Tidak ada data laporan yang sesuai filter.</td>
                         </tr>
-
                     @endforelse
-
                 </tbody>
-
             </table>
-
         </div>
-
-
-        {{-- Tanda tangan --}}
-        <div class="hidden print:flex justify-end mt-10">
-
-            <div class="text-center w-56">
-
-                <p class="mb-16">
-                    Petugas,
-                </p>
-
-                <p class="font-semibold border-b border-gray-800 pb-1">
-                    {{ auth()->user()->name }}
-                </p>
-
-            </div>
-
-        </div>
-
     </div>
-
-</div>
-
-
-{{-- CSS khusus saat mencetak --}}
-<style>
-
-@media print {
-
-    @page {
-        size: landscape;
-        margin: 15mm;
-    }
-
-    body {
-        background: white !important;
-    }
-
-    aside,
-    header {
-        display: none !important;
-    }
-
-    main {
-        padding: 0 !important;
-    }
-
-    #area-laporan {
-        padding: 0 !important;
-    }
-
-    table {
-        font-size: 11px;
-    }
-
-    th,
-    td {
-        padding: 6px !important;
-    }
-
-}
-
-</style>
-
 @endsection

@@ -14,7 +14,8 @@ class PeminjamController extends Controller
     // Melihat daftar/katalog alat yang tersedia
     public function katalogAlat()
     {
-        $alats = Alat::with('kategori')->where('stok','>', 0)->get();
+        $alats = Alat::with('kategori')->where('stok', '>', 0)->get();
+
         return view('peminjam.katalog', compact('alats'));
     }
 
@@ -27,6 +28,7 @@ class PeminjamController extends Controller
         ]);
 
         DB::beginTransaction();
+
         try {
             // Buat header peminjaman
             $peminjaman = Peminjaman::create([
@@ -37,7 +39,7 @@ class PeminjamController extends Controller
             ]);
 
             // Masukkan daftar alat yang dipinjam ke detail_pinjam
-            foreach($request->alat_id as $index => $alatId) {
+            foreach ($request->alat_id as $index => $alatId) {
                 DetailPinjam::create([
                     'peminjaman_id' => $peminjaman->id,
                     'alat_id' => $alatId,
@@ -46,20 +48,27 @@ class PeminjamController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('peminjam.riwayat')->with('success', 'Pengajuan peminjaman berhasil dikirim.');
+
+            return redirect()
+                ->route('peminjam.riwayat')
+                ->with('success', 'Pengajuan peminjaman berhasil dikirim.');
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->back()->with('error', 'Gagal mengajukan peminjaman: ' . $e->getMessage());
+
+            return redirect()
+                ->back()
+                ->with('error', 'Gagal mengajukan peminjaman: ' . $e->getMessage());
         }
     }
 
-    // Melihat riwayat peminjamam user yang sedang login
+    // Melihat riwayat peminjaman user yang sedang login
     public function riwayatPeminjaman()
     {
-        $peminjaman = Peminjaman::with('detailPinjams.alat')
+        $peminjamans = Peminjaman::with('detailPinjam.alat')
             ->where('user_id', auth()->id())
             ->latest()
             ->get();
-        return view('peminjam.riwayat', compact('peminjaman'));
+
+        return view('peminjam.riwayat', compact('peminjamans'));
     }
 }
