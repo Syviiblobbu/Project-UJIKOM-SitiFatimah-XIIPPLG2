@@ -17,19 +17,36 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255',
-            // Mengabaikan ID user yang sedang di update agar tidak memicu error "Email sudah terdaftar"
-                Rule::unique('users', 'email')->ignore($userId),
+
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email'),
             ],
-            'password' => ['required', 'string',
+
+            'password' => [
+                'required',
+                'string',
                 Password::min(8)->letters()->numbers()
             ],
-            'role' => ['required',
-                Rule::in(['admin', 'petugas', 'peminjam']) //input hanya boleh dari opsi ini
+
+            'role' => [
+                'required',
+                Rule::in(['admin', 'petugas', 'peminjam'])
             ],
+
             'no_hp' => ['nullable', 'string', 'max:15'],
+
             'alamat' => ['nullable', 'string'],
-            'foto_profile' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+
+            'foto_profile' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,png,jpg',
+                'max:2048'
+            ],
         ];
     }
 }
