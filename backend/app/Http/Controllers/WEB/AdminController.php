@@ -218,6 +218,7 @@ class AdminController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
             'role' => 'required|in:admin,petugas,peminjam',
+            'no_hp' => ['nullable', 'regex:/^[0-9]+$/'],
             'foto_profile' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
@@ -264,6 +265,7 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
             'role' => 'required|in:admin,petugas,peminjam',
+            'no_hp' => ['nullable', 'regex:/^[0-9]+$/'],
             'foto_profile' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
@@ -299,6 +301,13 @@ class AdminController extends Controller
     public function destroyUser($id)
     {
         $user = User::findOrFail($id);
+
+        // Cegah admin menghapus akun yang sedang digunakan
+        if ($user->id == auth()->id()) {
+            return redirect()
+                ->route('admin.user.index')
+                ->with('error', 'Anda tidak dapat menghapus akun yang sedang digunakan.');
+        }
 
         $namaUser = $user->name;
 

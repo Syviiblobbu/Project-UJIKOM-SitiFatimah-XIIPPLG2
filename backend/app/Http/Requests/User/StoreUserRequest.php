@@ -37,7 +37,7 @@ class StoreUserRequest extends FormRequest
                 Rule::in(['admin', 'petugas', 'peminjam'])
             ],
 
-            'no_hp' => ['nullable', 'string', 'max:15'],
+            'no_hp' => ['nullable', 'regex:/^[0-9]+$/', 'max:15'],
 
             'alamat' => ['nullable', 'string'],
 
