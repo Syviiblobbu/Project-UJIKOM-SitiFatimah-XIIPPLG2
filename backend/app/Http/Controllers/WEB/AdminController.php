@@ -20,15 +20,44 @@ class AdminController extends Controller
     // DASHBOARD ADMIN
     // =========================================================
 
-    // Menampilkan Dashboard Admin & Log Aktivitas
+    // Index Dashboard Atmin
     public function index()
+    {
+        $jumlahUser = User::count();
+        $jumlahKategori = Kategori::count();
+        $jumlahAlat = Alat::count();
+        $jumlahPeminjaman = Peminjaman::count();
+        $jumlahPengembalian = Pengembalian::count();
+
+        // Peminjaman yang terlambat dikembalikan
+        $peminjamanTerlambat = Peminjaman::with('user')
+            ->where('status', 'dipinjam')
+            ->whereDate('tgl_kembali_plan', '<', now())
+            ->count();
+
+        // Peminjaman yang masih menunggu persetujuan
+        $peminjamanMenunggu = Peminjaman::where('status', 'diajukan')
+            ->count();
+
+        return view('admin.dashboard', compact(
+            'jumlahUser',
+            'jumlahKategori',
+            'jumlahAlat',
+            'jumlahPeminjaman',
+            'jumlahPengembalian',
+            'peminjamanTerlambat',
+            'peminjamanMenunggu'
+        ));
+    }
+
+    // Menampilkan Log Aktivitas
+    public function logAktivitas()
     {
         $logs = LogAktivitas::with('user')
             ->latest()
-            ->take(10)
             ->get();
 
-        return view('admin.dashboard', compact('logs'));
+        return view('admin.log-aktivitas', compact('logs'));
     }
 
 
@@ -672,6 +701,11 @@ class AdminController extends Controller
                 $alat->save();
             }
 
+            LogAktivitas::create([
+                'user_id' => auth()->id(),
+                'aktivitas' => 'Memproses pengembalian peminjaman ID: ' . $peminjaman->id,
+            ]);
+
             DB::commit();
 
             return redirect()
@@ -692,6 +726,89 @@ class AdminController extends Controller
                     'error',
                     'Terjadi kesalahan: ' . $e->getMessage()
                 );
+        }
+    }
+
+    public function editPengembalian($id)
+    {
+        $pengembalian = Pengembalian::with([
+            'peminjaman.user',
+            'peminjaman.detailPinjam.alat'
+        ])->findOrFail($id);
+
+        return view('admin.pengembalian.edit', compact('pengembalian'));
+    }
+
+    public function updatePengembalian(Request $request, $id)
+    {
+        $pengembalian = Pengembalian::with([
+            'peminjaman.detailPinjam.alat'
+        ])->findOrFail($id);
+
+        $request->validate([
+            'kondisi_kembali' => 'required|string|max:255',
+            'denda' => 'required|integer|min:0',
+        ]);
+
+        $pengembalian->update([
+            'kondisi_kembali' => $request->kondisi_kembali,
+            'denda' => $request->denda,
+        ]);
+
+        LogAktivitas::create([
+            'user_id' => auth()->id(),
+            'aktivitas' => 'Mengubah data pengembalian ID: ' . $pengembalian->id,
+        ]);
+
+        return redirect()
+            ->route('admin.pengembalian.index')
+            ->with('success', 'Data pengembalian berhasil diperbarui.');
+    }
+
+    public function destroyPengembalian($id)
+    {
+        DB::beginTransaction();
+
+        try {
+            $pengembalian = Pengembalian::with([
+                'peminjaman.detailPinjam.alat'
+            ])->findOrFail($id);
+
+            $peminjaman = $pengembalian->peminjaman;
+
+            // Kembalikan stok ke kondisi sebelum pengembalian
+            foreach ($peminjaman->detailPinjam as $detail) {
+                $alat = $detail->alat;
+
+                if ($alat) {
+                    $alat->decrement('stok', $detail->jumlah);
+                }
+            }
+
+            // Status peminjaman dikembalikan menjadi sedang dipinjam
+            $peminjaman->update([
+                'status' => 'dipinjam',
+            ]);
+
+            // Hapus data pengembalian
+            $pengembalian->delete();
+
+            LogAktivitas::create([
+                'user_id' => auth()->id(),
+                'aktivitas' => 'Menghapus data pengembalian ID: ' . $pengembalian->id,
+            ]);
+
+            DB::commit();
+
+            return redirect()
+                ->route('admin.pengembalian.index')
+                ->with('success', 'Data pengembalian berhasil dihapus.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()
+                ->route('admin.pengembalian.index')
+                ->with('error', 'Data pengembalian gagal dihapus: ' . $e->getMessage());
         }
     }
 }

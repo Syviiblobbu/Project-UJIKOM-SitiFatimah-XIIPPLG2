@@ -13,6 +13,7 @@ Route::get('/', function () {
 //admin
 Route::middleware(['auth', 'role.admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    Route::get('/log-aktivitas', [AdminController::class, 'logAktivitas'])->name('log-aktivitas');
 
     // CRUD Alat
     Route::get('/alat', [AdminController::class, 'indexAlat'])->name('alat.index');
@@ -52,6 +53,8 @@ Route::middleware(['auth', 'role.admin'])->prefix('admin')->name('admin.')->grou
     // CRUD Pengembalian
     Route::get('/pengembalian', [AdminController::class, 'indexPengembalian'])->name('pengembalian.index');
     Route::post('/pengembalian/{peminjamanId}', [AdminController::class, 'prosesPengembalian'])->name('pengembalian.proses');
+    Route::get('/pengembalian/{id}/edit', [AdminController::class, 'editPengembalian'])->name('pengembalian.edit');
+    Route::put('/pengembalian/{id}', [AdminController::class, 'updatePengembalian'])->name('pengembalian.update');
     Route::delete('/pengembalian/{id}', [AdminController::class, 'destroyPengembalian'])->name('pengembalian.destroy');
 });
 

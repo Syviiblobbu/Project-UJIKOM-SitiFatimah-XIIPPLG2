@@ -53,6 +53,13 @@
                        class="block px-4 py-2 rounded-lg transition {{ request()->routeIs('admin.pengembalian*') ? 'bg-gray-800 text-white font-medium shadow' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                         Kelola Pengembalian
                     </a>
+
+                    <!-- Log Aktivitas -->
+                    <a href="{{ route('admin.log-aktivitas') }}"
+                       class="block px-4 py-2 rounded-lg transition {{ request()->routeIs('admin.log-aktivitas*') ? 'bg-gray-800 text-white font-medium shadow' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                        Log Aktivitas
+                    </a>
+
                 @endif
 
                 <!-- MENU KHUSUS PETUGAS -->

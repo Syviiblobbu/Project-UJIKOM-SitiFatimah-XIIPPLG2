@@ -73,9 +73,7 @@
 
                             {{-- Peminjam --}}
                             <td class="py-3 px-4 border-b font-medium text-gray-900">
-
                                 {{ $peminjaman->user->name ?? 'User Dihapus' }}
-
                             </td>
 
 
@@ -159,6 +157,7 @@
                                     <div class="flex justify-between items-center mb-5">
 
                                         <div>
+
                                             <h3 class="text-lg font-bold text-gray-800">
                                                 Proses Pengembalian
                                             </h3>
@@ -166,7 +165,9 @@
                                             <p class="text-sm text-gray-500">
                                                 {{ $peminjaman->user->name ?? 'User Dihapus' }}
                                             </p>
+
                                         </div>
+
 
                                         <button
                                             type="button"
@@ -185,20 +186,26 @@
                                         <div class="text-sm text-gray-600">
 
                                             <div class="mb-2">
+
                                                 <span class="font-semibold text-gray-800">
                                                     Tanggal Pinjam:
                                                 </span>
 
                                                 {{ $peminjaman->tgl_pinjam }}
+
                                             </div>
 
+
                                             <div class="mb-2">
+
                                                 <span class="font-semibold text-gray-800">
                                                     Rencana Kembali:
                                                 </span>
 
                                                 {{ $peminjaman->tgl_kembali_plan }}
+
                                             </div>
+
 
                                             <div>
 
@@ -211,8 +218,11 @@
                                                     @foreach($peminjaman->detailPinjam as $detail)
 
                                                         <li>
+
                                                             {{ $detail->alat->nama_alat ?? 'Alat Dihapus' }}
+
                                                             ({{ $detail->jumlah }} pcs)
+
                                                         </li>
 
                                                     @endforeach
@@ -244,6 +254,7 @@
                                             >
                                                 Kondisi Barang Saat Kembali
                                             </label>
+
 
                                             <select
                                                 id="kondisi_kembali_{{ $peminjaman->id }}"
@@ -287,6 +298,7 @@
                                                 Denda Kerusakan
                                             </label>
 
+
                                             <div class="relative">
 
                                                 <span class="absolute left-3 top-2 text-sm text-gray-500">
@@ -303,6 +315,7 @@
                                                 >
 
                                             </div>
+
 
                                             <p class="text-xs text-gray-500 mt-1">
                                                 Isi 0 jika tidak ada kerusakan.
@@ -321,6 +334,7 @@
                                             >
                                                 Batal
                                             </button>
+
 
                                             <button
                                                 type="submit"
@@ -349,7 +363,6 @@
                                 class="py-6 text-center text-gray-500"
                             >
                                 Tidak ada peminjaman yang sedang diproses.
-
                             </td>
 
                         </tr>
@@ -372,6 +385,7 @@
 
     <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
 
+        {{-- HEADER + SEARCH --}}
         <div class="p-5 border-b border-gray-200 bg-gray-50 flex flex-col md:flex-row justify-between items-center gap-4">
 
             <h3 class="text-lg font-bold text-gray-800">
@@ -396,12 +410,14 @@
                         class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
 
+
                     <button
                         type="submit"
                         class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 text-sm font-semibold rounded-lg transition"
                     >
                         Cari
                     </button>
+
 
                     @if(request('search'))
 
@@ -422,7 +438,6 @@
 
 
         {{-- TABEL RIWAYAT --}}
-
         <div class="overflow-x-auto">
 
             <table class="w-full text-left border-collapse">
@@ -453,6 +468,10 @@
 
                         <th class="py-3 px-4 border-b">
                             Petugas
+                        </th>
+
+                        <th class="py-3 px-4 border-b">
+                            Aksi
                         </th>
 
                     </tr>
@@ -516,9 +535,7 @@
                             <td class="py-3 px-4 border-b">
 
                                 <span class="text-xs text-gray-700">
-
                                     {{ $pengembalian->kondisi_kembali }}
-
                                 </span>
 
                             </td>
@@ -530,17 +547,13 @@
                                 @if($pengembalian->denda > 0)
 
                                     <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-
                                         Rp {{ number_format($pengembalian->denda, 0, ',', '.') }}
-
                                     </span>
 
                                 @else
 
                                     <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800">
-
                                         Tidak Ada
-
                                     </span>
 
                                 @endif
@@ -555,6 +568,44 @@
 
                             </td>
 
+
+                            {{-- AKSI --}}
+                            <td class="py-3 px-4 border-b">
+
+                                <div class="flex items-center gap-2">
+
+                                    {{-- EDIT --}}
+                                    <a
+                                        href="{{ route('admin.pengembalian.edit', $pengembalian->id) }}"
+                                        class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded text-xs font-semibold transition"
+                                    >
+                                        Edit
+                                    </a>
+
+
+                                    {{-- HAPUS --}}
+                                    <form
+                                        action="{{ route('admin.pengembalian.destroy', $pengembalian->id) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('Yakin ingin menghapus data pengembalian ini? Stok alat akan dikurangi dan status peminjaman dikembalikan menjadi dipinjam.')"
+                                    >
+
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button
+                                            type="submit"
+                                            class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-semibold transition"
+                                        >
+                                            Hapus
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
                         </tr>
 
                     @empty
@@ -562,13 +613,14 @@
                         <tr>
 
                             <td
-                                colspan="6"
+                                colspan="7"
                                 class="py-6 text-center text-gray-500"
                             >
 
                                 @if(request('search'))
 
                                     Tidak ditemukan data pengembalian dengan kata kunci:
+
                                     <span class="font-semibold">
                                         "{{ request('search') }}"
                                     </span>
@@ -593,7 +645,6 @@
 
 
         {{-- PAGINATION --}}
-
         <div class="p-4 border-t border-gray-200 bg-gray-50">
 
             {{ $pengembalians->links() }}
