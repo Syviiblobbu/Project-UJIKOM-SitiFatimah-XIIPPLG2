@@ -280,6 +280,68 @@
 
                     </div>
 
+                    {{-- Informasi Pengembalian --}}
+                    <div class="mt-5 border-t border-gray-200 pt-5">
+                        <h3 class="text-sm font-bold text-gray-800 mb-3">
+                            Pengembalian Alat
+                        </h3>
+
+                        @php
+                            $pengembalian = $item->pengembalian;
+                        @endphp
+
+                        @if($pengembalian)
+                            @if($pengembalian->status_pengajuan === 'menunggu')
+                                <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4">
+                                    <p class="font-semibold">Menunggu Penerimaan Petugas</p>
+                                    <p class="text-sm mt-1">
+                                        Silakan serahkan alat secara langsung kepada petugas
+                                        agar kondisi alat dapat diperiksa.
+                                    </p>
+                                </div>
+                            @elseif($pengembalian->status_pengajuan === 'disetujui')
+                                <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg p-4">
+                                    <p class="font-semibold">Pengembalian Selesai</p>
+                                    <p class="text-sm mt-1">
+                                        Pengembalian alat telah diproses oleh petugas.
+                                    </p>
+                                </div>
+                            @elseif($pengembalian->status_pengajuan === 'ditolak')
+                                <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4">
+                                    <p class="font-semibold">Pengembalian Ditolak</p>
+                                    <p class="text-sm mt-1">
+                                        Silakan hubungi petugas untuk informasi lebih lanjut.
+                                    </p>
+                                </div>
+                            @endif
+
+                        @elseif(in_array($item->status, ['dipinjam', 'telat']))
+                            <form
+                                action="{{ route('peminjam.pengembalian.ajukan', $item->id) }}"
+                                method="POST"
+                                onsubmit="return confirm('Ajukan pengembalian alat ini? Pastikan kamu siap menyerahkan alat secara langsung kepada petugas.')"
+                            >
+                                @csrf
+
+                                <button
+                                    type="submit"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition"
+                                >
+                                    Mengembalikan Alat
+                                </button>
+
+                                <p class="text-xs text-gray-500 mt-2">
+                                    Setelah mengajukan, serahkan alat kepada petugas
+                                    untuk pemeriksaan kondisi dan perhitungan denda.
+                                </p>
+                            </form>
+                        @else
+                            <p class="text-sm text-gray-500">
+                                Pengembalian belum tersedia untuk status peminjaman ini.
+                            </p>
+                        @endif
+                    </div>
+
                 </div>
 
             </div>

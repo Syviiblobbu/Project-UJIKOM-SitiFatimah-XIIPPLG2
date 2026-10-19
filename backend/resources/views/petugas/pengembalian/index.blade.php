@@ -46,7 +46,7 @@
                     </tr>
                 </thead>
                 <tbody class="text-gray-700 text-sm">
-                    @forelse($peminjaman as $item)
+                    @forelse($peminjamans as $item)
                         <tr class="hover:bg-gray-50 transition align-top">
                             <td class="py-3 px-4 border-b font-medium text-gray-900">
                                 {{ $item->user->name ?? 'User Dihapus' }}
@@ -68,30 +68,53 @@
                                     @endforeach
                                 </ul>
                             </td>
-                            <td class="py-3 px-4 border-b text-center">
-                                <!-- Form Proses Pengembalian -->
-                                <form action="{{ route('petugas.pengembalian.proses', $item->id) }}" method="POST"
-                                    class="inline-block bg-gray-50 p-3 rounded border border-gray-200 text-left space-y-2">
-                                    @csrf
-                                    <div>
-                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Kondisi Kembali:</label>
-                                        <select name="kondisi_kembali" required class="w-full text-xs border border-gray-300 rounded px-2 py-1 focus:ring-emerald-500 focus:border-emerald-500">
-                                            <option value="Baik">Baik</option>
-                                            <option value="Rusak Ringan">Rusak Ringan</option>
-                                            <option value="Rusak Berat">Rusak Berat</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Denda (Rp):</label>
-                                        <input type="number" name="denda" value="0" placeholder="0"
-                                            class="w-full text-xs border border-gray-300 rounded px-2 py-1 focus:ring-emerald-500 focus:border-emerald-500">
-                                    </div>
-                                    <button type="submit" onclick="return confirm('Proses pengembalian alat ini?')"
-                                        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded text-xs font-semibold transition shadow-sm">
-                                        Terima Pengembalian
-                                    </button>
-                                </form>
-                            </td>
+                            
+        <td class="py-3 px-4 border-b text-center">
+            @if(
+                $item->pengembalian &&
+                $item->pengembalian->status_pengajuan === 'menunggu'
+            )
+                <form action="{{ route('petugas.pengembalian.proses', $item->id) }}"
+                    method="POST"
+                    class="inline-block bg-gray-50 p-3 rounded border border-gray-200 text-left space-y-2">
+                    @csrf
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">
+                            Kondisi Kembali:
+                        </label>
+
+                        <select name="kondisi_kembali" required
+                            class="w-full text-xs border border-gray-300 rounded px-2 py-1">
+                            <option value="Baik">Baik</option>
+                            <option value="Rusak Ringan">Rusak Ringan</option>
+                            <option value="Rusak Berat">Rusak Berat</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">
+                            Denda Kerusakan (Rp):
+                        </label>
+
+                        <input type="number" name="denda_kerusakan"
+                            value="0" min="0" step="1000"
+                            class="w-full text-xs border border-gray-300 rounded px-2 py-1">
+                    </div>
+
+                    <button type="submit"
+                        onclick="return confirm('Proses pengembalian alat ini?')"
+                        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded text-xs font-semibold transition shadow-sm">
+                        Terima Pengembalian
+                    </button>
+                </form>
+            @else
+                <span class="text-xs text-gray-500">
+                    Belum ada permintaan pengembalian.
+                </span>
+            @endif
+        </td>
+
                         </tr>
                     @empty
                         <tr>

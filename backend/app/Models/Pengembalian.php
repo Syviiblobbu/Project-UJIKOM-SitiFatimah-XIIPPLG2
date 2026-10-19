@@ -15,7 +15,8 @@ class Pengembalian extends Model
         'kondisi_kembali',
         'denda',
         'denda_kerusakan',
-        'petugas_id'
+        'petugas_id',
+        'status_pengajuan'
     ];
 
     protected function casts(): array {

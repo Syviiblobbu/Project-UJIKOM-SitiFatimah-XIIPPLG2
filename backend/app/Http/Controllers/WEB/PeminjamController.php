@@ -64,11 +64,45 @@ class PeminjamController extends Controller
     // Melihat riwayat peminjaman user yang sedang login
     public function riwayatPeminjaman()
     {
-        $peminjamans = Peminjaman::with('detailPinjam.alat')
+        $peminjamans = Peminjaman::with([
+            'detailPinjam.alat.kategori',
+            'pengembalian'
+        ])
             ->where('user_id', auth()->id())
             ->latest()
             ->get();
 
         return view('peminjam.riwayat', compact('peminjamans'));
+    }
+
+    // Ajukan Pengembalian
+    public function ajukanPengembalian($id)
+    {
+        $peminjaman = Peminjaman::where('user_id', auth()->id())
+            ->whereIn('status', ['dipinjam', 'telat'])
+            ->findOrFail($id);
+
+        // Pastikan belum ada pengajuan pengembalian
+        $sudahAda = \App\Models\Pengembalian::where(
+            'peminjaman_id',
+            $peminjaman->id
+        )->exists();
+
+        if ($sudahAda) {
+            return redirect()
+                ->back()
+                ->with('error', 'Pengembalian sudah pernah diajukan atau diproses.');
+        }
+
+        \App\Models\Pengembalian::create([
+            'peminjaman_id' => $peminjaman->id,
+            'status_pengajuan' => 'menunggu',
+            'denda' => 0,
+            'denda_kerusakan' => 0,
+        ]);
+
+        return redirect()
+            ->route('peminjam.riwayat')
+            ->with('success', 'Pengajuan pengembalian berhasil dikirim. Silakan serahkan alat kepada petugas.');
     }
 }
