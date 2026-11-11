@@ -50,8 +50,12 @@
                             <td class="py-3 px-4 border-b font-medium text-gray-900">
                                 {{ $item->user->name ?? 'User Dihapus' }}
                             </td>
-                            <td class="py-3 px-4 border-b">{{ $item->tgl_pinjam }}</td>
-                            <td class="py-3 px-4 border-b">{{ $item->tgl_kembali_plan }}</td>
+                            <td class="py-3 px-4 border-b">
+                                {{ $item->tgl_pinjam?->format('d/m/Y') ?? '-' }}
+                            </td>
+                            <td class="py-3 px-4 border-b">
+                                {{ $item->tgl_kembali_plan?->format('d/m/Y') ?? '-' }}
+                            </td>
                             <td class="py-3 px-4 border-b">
                                 <ul class="list-disc list-inside space-y-1 text-xs">
                                     @foreach($item->detailPinjam as $detail)

@@ -76,15 +76,19 @@
                             </td>
 
                             <td class="py-3 px-4 border-b text-xs text-gray-600">
-                                <span class="block">Pinjam: {{ $item->tgl_pinjam }}</span>
-                                <span class="block font-semibold">Rencana: {{ $item->tgl_kembali_plan }}</span>
+                                <span class="block">
+                                    Pinjam: {{ $item->tgl_pinjam?->format('d/m/Y') ?? '-' }}
+                                </span>
+                                <span class="block font-semibold">
+                                    Rencana: {{ $item->tgl_kembali_plan?->format('d/m/Y') ?? '-' }}
+                                </span>
                             </td>
 
                             <td class="py-3 px-4 border-b">
                                 <span class="px-2.5 py-1 text-xs font-semibold rounded-full
                                     @if($item->status == 'diajukan') bg-yellow-100 text-yellow-800
                                     @elseif($item->status == 'dipinjam') bg-blue-100 text-blue-800
-                                    @elseif($item->status == 'selesai') bg-emerald-100 text-emerald-800
+                                    @elseif($item->status == 'dikembalikan') bg-emerald-100 text-emerald-800
                                     @else bg-red-100 text-red-800 @endif">
                                     {{ ucfirst($item->status) }}
                                 </span>
@@ -99,7 +103,7 @@
                                         <select name="status" onchange="this.form.submit()" class="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none">
                                             <option value="diajukan" {{ $item->status == 'diajukan' ? 'selected' : '' }}>Diajukan</option>
                                             <option value="dipinjam" {{ $item->status == 'dipinjam' ? 'selected' : '' }}>Dipinjam</option>
-                                            <option value="selesai" {{ $item->status == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                                            <option value="dikembalikan" {{ $item->status == 'dikembalikan' ? 'selected' : '' }}>Dikembalikan</option>
                                             <option value="telat" {{ $item->status == 'telat' ? 'selected' : '' }}>Telat</option>
                                         </select>
                                     </form>

@@ -5,6 +5,7 @@ use App\Http\Controllers\WEB\AdminController;
 use App\Http\Controllers\WEB\PetugasController;
 use App\Http\Controllers\WEB\PeminjamController;
 use App\Http\Controllers\WEB\AuthController;
+use App\Http\Controllers\WEB\ProfileController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -85,9 +86,23 @@ Route::middleware(['auth', 'role.peminjam'])->prefix('peminjam')->name('peminjam
 
 // Route Tamu (Belum login)
 Route::middleware('guest')->group(function() {
+    // Login
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
+
+    // Register
+    Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
 });
 
 // Route Logout (Harus sudah login)
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+// Route Profile (Semua Role)
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'index'])
+        ->name('profile.index');
+
+    Route::put('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+});

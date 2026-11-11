@@ -1,15 +1,12 @@
+
 @extends('layouts.app')
 
 @section('title', 'Kelola Pengembalian - Panel Admin')
-
 @section('header-title', 'Manajemen Transaksi Pengembalian')
 
 @section('content')
 
-    {{-- ========================================================= --}}
     {{-- PESAN SUCCESS / ERROR --}}
-    {{-- ========================================================= --}}
-
     @if(session('success'))
         <div class="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-lg shadow-sm text-sm">
             {{ session('success') }}
@@ -22,11 +19,7 @@
         </div>
     @endif
 
-
-    {{-- ========================================================= --}}
     {{-- PEMINJAMAN YANG BELUM DIKEMBALIKAN --}}
-    {{-- ========================================================= --}}
-
     <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-6">
 
         <div class="p-5 border-b border-gray-200 bg-gray-50">
@@ -40,28 +33,14 @@
         </div>
 
         <div class="overflow-x-auto">
-
             <table class="w-full text-left border-collapse">
 
                 <thead>
                     <tr class="bg-gray-100 text-gray-600 text-sm uppercase tracking-wider">
-
-                        <th class="py-3 px-4 border-b">
-                            Peminjam
-                        </th>
-
-                        <th class="py-3 px-4 border-b">
-                            Alat yang Dipinjam
-                        </th>
-
-                        <th class="py-3 px-4 border-b">
-                            Tgl Pinjam / Rencana Kembali
-                        </th>
-
-                        <th class="py-3 px-4 border-b">
-                            Aksi
-                        </th>
-
+                        <th class="py-3 px-4 border-b">Peminjam</th>
+                        <th class="py-3 px-4 border-b">Alat yang Dipinjam</th>
+                        <th class="py-3 px-4 border-b">Tgl Pinjam / Rencana Kembali</th>
+                        <th class="py-3 px-4 border-b">Aksi</th>
                     </tr>
                 </thead>
 
@@ -76,16 +55,11 @@
                                 {{ $peminjaman->user->name ?? 'User Dihapus' }}
                             </td>
 
-
                             {{-- Alat --}}
                             <td class="py-3 px-4 border-b">
-
                                 <ul class="list-disc list-inside space-y-1">
-
                                     @foreach($peminjaman->detailPinjam as $detail)
-
                                         <li>
-
                                             <span class="font-semibold">
                                                 {{ $detail->alat->nama_alat ?? 'Alat Dihapus' }}
                                             </span>
@@ -93,33 +67,24 @@
                                             <span class="text-xs bg-gray-200 px-1.5 py-0.5 rounded">
                                                 {{ $detail->jumlah }} pcs
                                             </span>
-
                                         </li>
-
                                     @endforeach
-
                                 </ul>
-
                             </td>
-
 
                             {{-- Tanggal --}}
                             <td class="py-3 px-4 border-b text-xs text-gray-600">
-
                                 <span class="block">
-                                    Pinjam: {{ $peminjaman->tgl_pinjam }}
+                                    Pinjam: {{ $peminjaman->tgl_pinjam?->format('d/m/Y') ?? '-' }}
                                 </span>
 
                                 <span class="block font-semibold">
-                                    Rencana: {{ $peminjaman->tgl_kembali_plan }}
+                                    Rencana: {{ $peminjaman->tgl_kembali_plan?->format('d/m/Y') ?? '-' }}
                                 </span>
-
                             </td>
-
 
                             {{-- Aksi --}}
                             <td class="py-3 px-4 border-b">
-
                                 <button
                                     type="button"
                                     onclick="document.getElementById('modal-{{ $peminjaman->id }}').classList.remove('hidden')"
@@ -127,16 +92,11 @@
                                 >
                                     Proses Pengembalian
                                 </button>
-
                             </td>
 
                         </tr>
 
-
-                        {{-- ================================================= --}}
                         {{-- MODAL PROSES PENGEMBALIAN --}}
-                        {{-- ================================================= --}}
-
                         <div
                             id="modal-{{ $peminjaman->id }}"
                             class="hidden fixed inset-0 z-50 overflow-y-auto"
@@ -150,14 +110,12 @@
                                     onclick="document.getElementById('modal-{{ $peminjaman->id }}').classList.add('hidden')"
                                 ></div>
 
-
                                 {{-- Modal --}}
-                                <div class="relative bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
+                                <div class="relative bg-white rounded-lg shadow-xl w-full max-w-lg p-6 my-8">
 
                                     <div class="flex justify-between items-center mb-5">
 
                                         <div>
-
                                             <h3 class="text-lg font-bold text-gray-800">
                                                 Proses Pengembalian
                                             </h3>
@@ -165,9 +123,7 @@
                                             <p class="text-sm text-gray-500">
                                                 {{ $peminjaman->user->name ?? 'User Dihapus' }}
                                             </p>
-
                                         </div>
-
 
                                         <button
                                             type="button"
@@ -179,152 +135,152 @@
 
                                     </div>
 
-
                                     {{-- Informasi Peminjaman --}}
                                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-5">
 
                                         <div class="text-sm text-gray-600">
 
                                             <div class="mb-2">
-
                                                 <span class="font-semibold text-gray-800">
                                                     Tanggal Pinjam:
                                                 </span>
 
-                                                {{ $peminjaman->tgl_pinjam }}
-
+                                                {{ $peminjaman->tgl_pinjam?->format('d/m/Y') ?? '-' }}
                                             </div>
 
-
                                             <div class="mb-2">
-
                                                 <span class="font-semibold text-gray-800">
                                                     Rencana Kembali:
                                                 </span>
 
-                                                {{ $peminjaman->tgl_kembali_plan }}
-
+                                                {{ $peminjaman->tgl_kembali_plan?->format('d/m/Y') ?? '-' }}
                                             </div>
 
-
                                             <div>
-
                                                 <span class="font-semibold text-gray-800">
                                                     Alat:
                                                 </span>
 
                                                 <ul class="list-disc list-inside mt-1">
-
                                                     @foreach($peminjaman->detailPinjam as $detail)
-
                                                         <li>
-
                                                             {{ $detail->alat->nama_alat ?? 'Alat Dihapus' }}
-
                                                             ({{ $detail->jumlah }} pcs)
-
                                                         </li>
-
                                                     @endforeach
-
                                                 </ul>
-
                                             </div>
 
                                         </div>
-
                                     </div>
 
-
-                                    {{-- Form --}}
+                                    {{-- FORM --}}
                                     <form
                                         action="{{ route('admin.pengembalian.proses', $peminjaman->id) }}"
                                         method="POST"
                                     >
-
                                         @csrf
 
-
-                                        {{-- Kondisi --}}
-                                        <div class="mb-4">
-
-                                            <label
-                                                for="kondisi_kembali_{{ $peminjaman->id }}"
-                                                class="block text-sm font-semibold text-gray-700 mb-2"
-                                            >
-                                                Kondisi Barang Saat Kembali
-                                            </label>
-
-
-                                            <select
-                                                id="kondisi_kembali_{{ $peminjaman->id }}"
-                                                name="kondisi_kembali"
-                                                required
-                                                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            >
-
-                                                <option value="">
-                                                    -- Pilih Kondisi --
-                                                </option>
-
-                                                <option value="Lengkap dan Berfungsi Baik">
-                                                    Lengkap dan Berfungsi Baik
-                                                </option>
-
-                                                <option value="Lengkap, Casing Sedikit Tergores">
-                                                    Lengkap, Casing Sedikit Tergores
-                                                </option>
-
-                                                <option value="Ada Kerusakan">
-                                                    Ada Kerusakan
-                                                </option>
-
-                                                <option value="Tidak Lengkap">
-                                                    Tidak Lengkap
-                                                </option>
-
-                                            </select>
-
-                                        </div>
-
-
-                                        {{-- Denda Kerusakan --}}
+                                        {{-- KONDISI DAN DENDA PER ALAT --}}
                                         <div class="mb-5">
 
-                                            <label
-                                                for="denda_kerusakan_{{ $peminjaman->id }}"
-                                                class="block text-sm font-semibold text-gray-700 mb-2"
-                                            >
-                                                Denda Kerusakan
-                                            </label>
+                                            <h4 class="text-sm font-bold text-gray-800 mb-3">
+                                                Kondisi dan Denda Setiap Alat
+                                            </h4>
 
+                                            @foreach($peminjaman->detailPinjam as $detail)
 
-                                            <div class="relative">
+                                                <div class="border border-gray-200 rounded-lg p-4 mb-3">
 
-                                                <span class="absolute left-3 top-2 text-sm text-gray-500">
-                                                    Rp
-                                                </span>
+                                                    <h5 class="font-semibold text-sm text-gray-800 mb-3">
+                                                        {{ $detail->alat->nama_alat ?? 'Alat Dihapus' }}
 
-                                                <input
-                                                    type="number"
-                                                    id="denda_kerusakan_{{ $peminjaman->id }}"
-                                                    name="denda_kerusakan"
-                                                    value="0"
-                                                    min="0"
-                                                    class="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                >
+                                                        <span class="text-xs text-gray-500">
+                                                            ({{ $detail->jumlah }} pcs)
+                                                        </span>
+                                                    </h5>
 
-                                            </div>
+                                                    {{-- Kondisi --}}
+                                                    <div class="mb-3">
 
+                                                        <label
+                                                            for="kondisi_{{ $peminjaman->id }}_{{ $detail->id }}"
+                                                            class="block text-sm font-medium text-gray-700 mb-1"
+                                                        >
+                                                            Kondisi Barang
+                                                        </label>
 
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                Isi 0 jika tidak ada kerusakan.
-                                            </p>
+                                                        <select
+                                                            id="kondisi_{{ $peminjaman->id }}_{{ $detail->id }}"
+                                                            name="detail[{{ $detail->id }}][kondisi_kembali]"
+                                                            required
+                                                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                        >
+                                                            <option value="">
+                                                                -- Pilih Kondisi --
+                                                            </option>
+
+                                                            <option value="Lengkap dan Berfungsi Baik">
+                                                                Lengkap dan Berfungsi Baik
+                                                            </option>
+
+                                                            <option value="Lengkap, Casing Sedikit Tergores">
+                                                                Lengkap, Casing Sedikit Tergores
+                                                            </option>
+
+                                                            <option value="Ada Kerusakan">
+                                                                Ada Kerusakan
+                                                            </option>
+
+                                                            <option value="Tidak Lengkap">
+                                                                Tidak Lengkap
+                                                            </option>
+                                                        </select>
+
+                                                    </div>
+
+                                                    {{-- Denda Kerusakan --}}
+                                                    <div>
+
+                                                        <label
+                                                            for="denda_{{ $peminjaman->id }}_{{ $detail->id }}"
+                                                            class="block text-sm font-medium text-gray-700 mb-1"
+                                                        >
+                                                            Denda Kerusakan
+                                                        </label>
+
+                                                        <div class="relative">
+
+                                                            <span class="absolute left-3 top-2 text-sm text-gray-500">
+                                                                Rp
+                                                            </span>
+
+                                                            <input
+                                                                type="number"
+                                                                id="denda_{{ $peminjaman->id }}_{{ $detail->id }}"
+                                                                name="detail[{{ $detail->id }}][denda_kerusakan]"
+                                                                value="0"
+                                                                min="0"
+                                                                step="1000"
+                                                                required
+                                                                class="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            >
+
+                                                        </div>
+
+                                                        <p class="text-xs text-gray-500 mt-1">
+                                                            Isi 0 jika tidak ada kerusakan.
+                                                        </p>
+
+                                                    </div>
+
+                                                </div>
+
+                                            @endforeach
 
                                         </div>
 
-
-                                        {{-- Tombol --}}
+                                        {{-- TOMBOL --}}
                                         <div class="flex justify-end gap-2">
 
                                             <button
@@ -334,7 +290,6 @@
                                             >
                                                 Batal
                                             </button>
-
 
                                             <button
                                                 type="submit"
@@ -357,14 +312,9 @@
                     @empty
 
                         <tr>
-
-                            <td
-                                colspan="4"
-                                class="py-6 text-center text-gray-500"
-                            >
+                            <td colspan="4" class="py-6 text-center text-gray-500">
                                 Tidak ada peminjaman yang sedang diproses.
                             </td>
-
                         </tr>
 
                     @endforelse
@@ -372,17 +322,12 @@
                 </tbody>
 
             </table>
-
         </div>
 
     </div>
 
 
-
-    {{-- ========================================================= --}}
     {{-- RIWAYAT PENGEMBALIAN --}}
-    {{-- ========================================================= --}}
-
     <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
 
         {{-- HEADER + SEARCH --}}
@@ -391,7 +336,6 @@
             <h3 class="text-lg font-bold text-gray-800">
                 Riwayat Pengembalian
             </h3>
-
 
             {{-- SEARCH --}}
             <div class="flex items-center gap-3 w-full md:w-auto">
@@ -410,7 +354,6 @@
                         class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
 
-
                     <button
                         type="submit"
                         class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 text-sm font-semibold rounded-lg transition"
@@ -418,16 +361,13 @@
                         Cari
                     </button>
 
-
                     @if(request('search'))
-
                         <a
                             href="{{ route('admin.pengembalian.index') }}"
                             class="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-700 px-3 py-2 text-sm rounded-lg flex items-center transition"
                         >
                             Reset
                         </a>
-
                     @endif
 
                 </form>
@@ -436,48 +376,22 @@
 
         </div>
 
-
         {{-- TABEL RIWAYAT --}}
         <div class="overflow-x-auto">
 
             <table class="w-full text-left border-collapse">
 
                 <thead>
-
                     <tr class="bg-gray-100 text-gray-600 text-sm uppercase tracking-wider">
-
-                        <th class="py-3 px-4 border-b">
-                            Peminjam
-                        </th>
-
-                        <th class="py-3 px-4 border-b">
-                            Alat
-                        </th>
-
-                        <th class="py-3 px-4 border-b">
-                            Tgl Pengembalian
-                        </th>
-
-                        <th class="py-3 px-4 border-b">
-                            Kondisi
-                        </th>
-
-                        <th class="py-3 px-4 border-b">
-                            Denda
-                        </th>
-
-                        <th class="py-3 px-4 border-b">
-                            Petugas
-                        </th>
-
-                        <th class="py-3 px-4 border-b">
-                            Aksi
-                        </th>
-
+                        <th class="py-3 px-4 border-b">Peminjam</th>
+                        <th class="py-3 px-4 border-b">Alat</th>
+                        <th class="py-3 px-4 border-b">Tgl Pengembalian</th>
+                        <th class="py-3 px-4 border-b">Kondisi</th>
+                        <th class="py-3 px-4 border-b">Denda</th>
+                        <th class="py-3 px-4 border-b">Petugas</th>
+                        <th class="py-3 px-4 border-b">Aksi</th>
                     </tr>
-
                 </thead>
-
 
                 <tbody class="text-gray-700 text-sm">
 
@@ -487,23 +401,17 @@
 
                             {{-- Peminjam --}}
                             <td class="py-3 px-4 border-b font-medium text-gray-900">
-
                                 {{ $pengembalian->peminjaman->user->name ?? 'User Dihapus' }}
-
                             </td>
-
 
                             {{-- Alat --}}
                             <td class="py-3 px-4 border-b">
-
                                 <ul class="list-disc list-inside space-y-1">
 
                                     @if($pengembalian->peminjaman)
 
                                         @foreach($pengembalian->peminjaman->detailPinjam as $detail)
-
                                             <li>
-
                                                 <span class="font-semibold">
                                                     {{ $detail->alat->nama_alat ?? 'Alat Dihapus' }}
                                                 </span>
@@ -511,35 +419,43 @@
                                                 <span class="text-xs bg-gray-200 px-1.5 py-0.5 rounded">
                                                     {{ $detail->jumlah }} pcs
                                                 </span>
-
                                             </li>
-
                                         @endforeach
 
                                     @endif
 
                                 </ul>
-
                             </td>
-
 
                             {{-- Tanggal --}}
                             <td class="py-3 px-4 border-b text-xs text-gray-600">
-
-                                {{ $pengembalian->tgl_kembali }}
-
+                                {{ $pengembalian->tgl_kembali?->format('d/m/Y') ?? '-' }}
                             </td>
 
-
-                            {{-- Kondisi --}}
+                            {{-- Kondisi per alat --}}
                             <td class="py-3 px-4 border-b">
+                                @if($pengembalian->detailPengembalian->isNotEmpty())
 
-                                <span class="text-xs text-gray-700">
-                                    {{ $pengembalian->kondisi_kembali }}
-                                </span>
+                                    <ul class="space-y-2">
+                                        @foreach($pengembalian->detailPengembalian as $detailKembali)
+                                            <li class="text-xs">
+                                                <span class="font-semibold text-gray-800">
+                                                    {{ $detailKembali->detailPinjam->alat->nama_alat ?? 'Alat Dihapus' }}
+                                                </span>
 
+                                                <span class="block text-gray-600">
+                                                    {{ $detailKembali->kondisi_kembali }}
+                                                </span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+
+                                @else
+                                    <span class="text-xs text-gray-700">
+                                        {{ $pengembalian->kondisi_kembali ?? '-' }}
+                                    </span>
+                                @endif
                             </td>
-
 
                             {{-- Denda --}}
                             <td class="py-3 px-4 border-b">
@@ -560,14 +476,10 @@
 
                             </td>
 
-
                             {{-- Petugas --}}
                             <td class="py-3 px-4 border-b text-sm">
-
                                 {{ $pengembalian->petugas->name ?? 'Petugas Dihapus' }}
-
                             </td>
-
 
                             {{-- AKSI --}}
                             <td class="py-3 px-4 border-b">
@@ -582,14 +494,12 @@
                                         Edit
                                     </a>
 
-
                                     {{-- HAPUS --}}
                                     <form
                                         action="{{ route('admin.pengembalian.destroy', $pengembalian->id) }}"
                                         method="POST"
                                         onsubmit="return confirm('Yakin ingin menghapus data pengembalian ini? Stok alat akan dikurangi dan status peminjaman dikembalikan menjadi dipinjam.')"
                                     >
-
                                         @csrf
                                         @method('DELETE')
 
@@ -611,11 +521,7 @@
                     @empty
 
                         <tr>
-
-                            <td
-                                colspan="7"
-                                class="py-6 text-center text-gray-500"
-                            >
+                            <td colspan="7" class="py-6 text-center text-gray-500">
 
                                 @if(request('search'))
 
@@ -632,7 +538,6 @@
                                 @endif
 
                             </td>
-
                         </tr>
 
                     @endforelse
@@ -643,12 +548,9 @@
 
         </div>
 
-
         {{-- PAGINATION --}}
         <div class="p-4 border-t border-gray-200 bg-gray-50">
-
             {{ $pengembalians->links() }}
-
         </div>
 
     </div>

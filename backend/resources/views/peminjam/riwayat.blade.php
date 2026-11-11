@@ -1,64 +1,12 @@
-<!DOCTYPE html>
+@extends('layouts.app')
 
-<html lang="id">
+@section('title', 'Riwayat Peminjaman')
+@section('header-title', 'Riwayat Peminjaman')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Riwayat Peminjaman - Peminjam</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-
-<body class="bg-gray-50 min-h-screen">
-
-    {{-- Navbar --}}
-    <nav class="bg-blue-600 shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-            <div class="flex items-center justify-between h-16">
-
-                {{-- Logo / Nama Panel --}}
-                <div>
-                    <a href="{{ route('peminjam.katalog') }}"
-                       class="text-white text-lg font-semibold">
-                        Panel Peminjam
-                    </a>
-                </div>
-
-                {{-- Menu --}}
-                <div class="flex items-center gap-2">
-
-                    <a href="{{ route('peminjam.katalog') }}"
-                       class="px-4 py-2 text-sm font-medium text-white border border-white/40 rounded-lg hover:bg-white/10 transition">
-                        Katalog Alat
-                    </a>
-
-                    <a href="{{ route('peminjam.riwayat') }}"
-                       class="px-4 py-2 text-sm font-medium text-blue-600 bg-white rounded-lg">
-                        Riwayat Pinjam
-                    </a>
-
-                    <form action="{{ route('logout') }}" method="POST" class="inline">
-                        @csrf
-
-                        <button type="submit"
-                                class="px-4 py-2 text-sm font-medium text-blue-600 bg-white rounded-lg hover:bg-gray-100 transition">
-                            Logout
-                        </button>
-                    </form>
-
-                </div>
-
-            </div>
-
-        </div>
-    </nav>
-
+@section('content')
 
     {{-- Content --}}
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto w-full">
 
         {{-- Notifikasi Sukses --}}
         @if(session('success'))
@@ -299,13 +247,72 @@
                                         agar kondisi alat dapat diperiksa.
                                     </p>
                                 </div>
-                            @elseif($pengembalian->status_pengajuan === 'disetujui')
-                                <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg p-4">
-                                    <p class="font-semibold">Pengembalian Selesai</p>
-                                    <p class="text-sm mt-1">
-                                        Pengembalian alat telah diproses oleh petugas.
+                            
+                        @elseif($pengembalian->status_pengajuan === 'disetujui')
+                            <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg p-4">
+                                <p class="font-semibold">Pengembalian Selesai</p>
+
+                                <p class="text-sm mt-1">
+                                    Pengembalian alat telah diproses oleh petugas.
+                                </p>
+
+                                <div class="mt-3 pt-3 border-t border-green-200">
+                                    <p class="text-xs text-green-700">
+                                        Tanggal Pengembalian
+                                    </p>
+
+                                    <p class="font-semibold text-green-900">
+                                        {{ $pengembalian->tgl_kembali
+                                            ? $pengembalian->tgl_kembali->format('d/m/Y')
+                                            : '-' }}
                                     </p>
                                 </div>
+
+                                <div class="mt-3 pt-3 border-t border-green-200">
+                                <p class="text-xs text-green-700 font-semibold mb-2">
+                                    Kondisi Setiap Alat
+                                </p>
+
+                                @foreach($item->detailPinjam as $detail)
+                                    @php
+                                        $detailKembali = $pengembalian->detailPengembalian
+                                            ->firstWhere('detail_pinjam_id', $detail->id);
+                                    @endphp
+
+                                    <div class="mb-3 last:mb-0">
+                                        <p class="font-semibold text-green-900">
+                                            {{ $detail->alat->nama_alat ?? '-' }}
+                                            ({{ $detail->jumlah }} unit)
+                                        </p>
+
+                                        @if($detailKembali)
+                                            <p class="text-sm text-green-800 mt-1">
+                                                Kondisi: {{ $detailKembali->kondisi_kembali }}
+                                            </p>
+
+                                            <p class="text-sm text-green-800">
+                                                Denda Kerusakan:
+                                                Rp {{ number_format($detailKembali->denda_kerusakan, 0, ',', '.') }}
+                                            </p>
+                                        @else
+                                            <p class="text-sm text-gray-500">
+                                                Data kondisi belum tersedia.
+                                            </p>
+                                        @endif
+                                    </div>
+                                @endforeach
+
+                                <div class="mt-3 pt-2 border-t border-green-200">
+                                    <p class="text-sm text-green-800">
+                                        Total Denda:
+                                        <strong>
+                                            Rp {{ number_format($pengembalian->denda ?? 0, 0, ',', '.') }}
+                                        </strong>
+                                    </p>
+                                </div>
+                            </div>
+                            </div>
+
                             @elseif($pengembalian->status_pengajuan === 'ditolak')
                                 <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4">
                                     <p class="font-semibold">Pengembalian Ditolak</p>
@@ -376,8 +383,5 @@
 
         @endforelse
 
-    </main>
-
-</body>
-
-</html>
+        </div>
+@endsection

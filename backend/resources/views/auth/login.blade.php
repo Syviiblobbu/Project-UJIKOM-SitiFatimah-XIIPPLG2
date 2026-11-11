@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Sistem Peminjaman Alat</title>
     <!-- Memuat Tailwind CSS melalui CDN -->
-     <script src="https:cdn.tailwindcss.com"></script>
+     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center h-screen">
     <div class="bg-white p-8 rounded-lg shadow-md w-96">
@@ -47,6 +47,15 @@
                 Masuk
             </button>
         </form>
+
+        <p class="text-center text-sm text-gray-600 mt-5">
+            Belum punya akun?
+
+            <a href="{{ route('register') }}"
+                class="text-blue-600 font-semibold hover:underline">
+                Daftar sekarang
+            </a>
+        </p>
     </div>
 </body>
 </html>

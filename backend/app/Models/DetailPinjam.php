@@ -26,4 +26,9 @@ class DetailPinjam extends Model
     public function alat (): BelongsTo {
         return $this->belongsTo(Alat::class);
     }
+
+    public function detailPengembalian()
+    {
+        return $this->hasOne(DetailPengembalian::class);
+    }
 }

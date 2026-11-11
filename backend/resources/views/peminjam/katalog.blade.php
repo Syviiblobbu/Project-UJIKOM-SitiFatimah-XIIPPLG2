@@ -1,59 +1,12 @@
-<!DOCTYPE html>
+@extends('layouts.app')
 
-<html lang="id">
+@section('title', 'Katalog Alat')
+@section('header-title', 'Katalog Alat')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Katalog Alat - Peminjam</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-
-<body class="bg-gray-50 min-h-screen">
-
-    {{-- Navbar --}}
-    <nav class="bg-blue-600 shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-            <div class="flex items-center justify-between h-16">
-
-                {{-- Nama Panel --}}
-                <a href="{{ route('peminjam.katalog') }}"
-                   class="text-white text-lg font-semibold">
-                    Panel Peminjam
-                </a>
-
-                {{-- Menu --}}
-                <div class="flex items-center gap-2">
-
-                    <a href="{{ route('peminjam.riwayat') }}"
-                       class="px-4 py-2 text-sm font-medium text-white border border-white/40 rounded-lg hover:bg-white/10 transition">
-                        Riwayat Pinjam
-                    </a>
-
-                    <form action="{{ route('logout') }}"
-                          method="POST"
-                          class="inline">
-                        @csrf
-
-                        <button type="submit"
-                                class="px-4 py-2 text-sm font-medium text-blue-600 bg-white rounded-lg hover:bg-gray-100 transition">
-                            Logout
-                        </button>
-                    </form>
-
-                </div>
-
-            </div>
-
-        </div>
-    </nav>
-
+@section('content')
 
     {{-- Content --}}
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto w-full">
 
         {{-- Notifikasi Sukses --}}
         @if(session('success'))
@@ -146,6 +99,10 @@
                                         Pilih
                                     </th>
 
+                                    <th class="px-4 py-3 border-b text-center">
+                                        Gambar
+                                    </th>
+
                                     <th class="px-4 py-3 border-b">
                                         Nama Alat
                                     </th>
@@ -180,6 +137,19 @@
                                                    value="{{ $alat->id }}"
                                                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
 
+                                        </td>
+
+                                        {{-- Gambar Alat --}}
+                                        <td class="px-4 py-3 border-b">
+                                            @if($alat->gambar)
+                                                <img src="{{ asset($alat->gambar) }}"
+                                                    alt="{{ $alat->nama_alat }}"
+                                                    class="w-14 h-14 object-cover rounded-lg border border-gray-200">
+                                            @else
+                                                <div class="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs">
+                                                    No Image
+                                                </div>
+                                            @endif
                                         </td>
 
 
@@ -231,7 +201,7 @@
 
                                     <tr>
 
-                                        <td colspan="5"
+                                        <td colspan="6"
                                             class="px-4 py-10 text-center">
 
                                             <div class="text-gray-400 text-3xl mb-2">
@@ -275,8 +245,5 @@
 
         </form>
 
-    </main>
-
-</body>
-
-</html>
+    </div>
+@endsection

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Alat;
 use App\Models\Peminjaman;
 use App\Models\DetailPinjam;
+use App\Models\DetailPengembalian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -66,7 +67,7 @@ class PeminjamController extends Controller
     {
         $peminjamans = Peminjaman::with([
             'detailPinjam.alat.kategori',
-            'pengembalian'
+            'pengembalian.detailPengembalian',
         ])
             ->where('user_id', auth()->id())
             ->latest()

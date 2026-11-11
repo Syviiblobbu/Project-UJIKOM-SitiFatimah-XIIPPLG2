@@ -82,6 +82,8 @@
 
                         <th class="py-3 px-4 border-b">No. HP</th>
 
+                        <th class="py-3 px-4 border-b">Alamat</th>
+
                         <th class="py-3 px-4 border-b">Aksi</th>
 
                     </tr>
@@ -149,6 +151,11 @@
                                 {{ $user->no_hp ?? '-' }}
                             </td>
 
+                            {{-- Alamat --}}
+                            <td class="py-3 px-4 border-b min-w-[200px]">
+                                {{ $user->alamat ?? '-' }}
+                            </td>
+
                             {{-- Aksi --}}
                             <td class="py-3 px-4 border-b">
 
@@ -183,7 +190,7 @@
 
                         <tr>
 
-                            <td colspan="6" class="py-6 text-center text-gray-500">
+                            <td colspan="7" class="py-6 text-center text-gray-500">
                                 Belum ada data pengguna.
                             </td>
 

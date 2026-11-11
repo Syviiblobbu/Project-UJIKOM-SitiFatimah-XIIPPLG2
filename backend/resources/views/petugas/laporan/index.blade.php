@@ -97,6 +97,7 @@
                         <th class="py-3 px-4 border-b">Peminjam</th>
                         <th class="py-3 px-4 border-b">Tgl Pinjam</th>
                         <th class="py-3 px-4 border-b">Rencana Kembali</th>
+                        <th class="py-3 px-4 border-b">Tgl Pengembalian</th>
                         <th class="py-3 px-4 border-b">Status</th>
                         <th class="py-3 px-4 border-b">Detail Alat</th>
                         <th class="py-3 px-4 border-b">Denda</th>
@@ -115,11 +116,15 @@
                             </td>
 
                             <td class="py-3 px-4 border-b">
-                                {{ $item->tgl_pinjam }}
+                                {{ $item->tgl_pinjam?->format('d/m/Y') ?? '-' }}
                             </td>
 
                             <td class="py-3 px-4 border-b">
-                                {{ $item->tgl_kembali_plan }}
+                                {{ $item->tgl_kembali_plan?->format('d/m/Y') ?? '-' }}
+                            </td>
+
+                            <td class="py-3 px-4 border-b">
+                                {{ $item->pengembalian?->tgl_kembali?->format('d/m/Y') ?? '-' }}
                             </td>
 
                             <td class="py-3 px-4 border-b">
@@ -133,14 +138,36 @@
                             </td>
 
                             <td class="py-3 px-4 border-b">
-                                <ul class="list-disc list-inside space-y-1 text-xs">
+                                <div class="space-y-3">
                                     @foreach($item->detailPinjam as $detail)
-                                        <li>
-                                            {{ $detail->alat->nama_alat ?? '-' }}
-                                            ({{ $detail->jumlah }})
-                                        </li>
+                                        @php
+                                            $detailKembali = $item->pengembalian?->detailPengembalian
+                                                ?->firstWhere('detail_pinjam_id', $detail->id);
+                                        @endphp
+
+                                        <div class="border-b border-gray-100 pb-2 last:border-0">
+                                            <p class="font-semibold text-gray-800">
+                                                {{ $detail->alat->nama_alat ?? '-' }}
+                                                ({{ $detail->jumlah }})
+                                            </p>
+
+                                            @if($detailKembali)
+                                                <p class="text-xs text-gray-500 mt-1">
+                                                    Kondisi: {{ $detailKembali->kondisi_kembali }}
+                                                </p>
+
+                                                <p class="text-xs text-gray-500">
+                                                    Denda kerusakan:
+                                                    Rp {{ number_format($detailKembali->denda_kerusakan, 0, ',', '.') }}
+                                                </p>
+                                            @else
+                                                <p class="text-xs text-gray-400 mt-1">
+                                                    Belum dikembalikan
+                                                </p>
+                                            @endif
+                                        </div>
                                     @endforeach
-                                </ul>
+                                </div>
                             </td>
 
                             <td class="py-3 px-4 border-b font-semibold">
@@ -149,7 +176,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="py-6 text-center text-gray-500">
+                            <td colspan="8" class="py-6 text-center text-gray-500">
                                 Tidak ada data laporan yang sesuai filter.
                             </td>
                         </tr>

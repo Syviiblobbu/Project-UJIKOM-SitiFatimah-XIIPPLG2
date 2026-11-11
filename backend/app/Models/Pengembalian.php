@@ -34,4 +34,9 @@ class Pengembalian extends Model
     public function petugas(): BelongsTo {
         return $this->belongsTo(User::class, 'petugas_id');
     }
+
+    public function detailPengembalian()
+    {
+        return $this->hasMany(DetailPengembalian::class);
+    }
 }
